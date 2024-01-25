@@ -1,0 +1,7 @@
+# Scatterplot
+ggplot(hfi_2016, aes(x = pf_expression_control, y = pf_score)) +
+  geom_point() +
+  labs(title = "PlotPersonal Freedom Score vs. PF Expression Control",
+       x = "PF Expression Control",
+       y = "PF Score") +
+  theme_minimal()

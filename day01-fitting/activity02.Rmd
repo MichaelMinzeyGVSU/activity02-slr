@@ -43,14 +43,12 @@ If you would like to try the *ISLR* labs using these two packages instead of bas
   
 - Run the `setup` code chunk and/or **knit** <img src="../README-img/knit-icon.png" alt="knit" width = "20"/> icon your Rmd document to verify that no errors occur.
 
-```{r setup, eval = FALSE}
+```{r setup }
 library(tidyverse)
 library(tidymodels)
 ```
 
 ![check-in](../README-img/noun-magnifying-glass.png) **Check in**
-
-Test me!
 
 Test your GitHub skills by staging, committing, and pushing your changes to GitHub and verify that your changes have been added to your GitHub repository.
 
@@ -66,8 +64,10 @@ In the R code chunk below titled `load-data`, you will type the code that reads 
 
 After doing this and viewing the loaded data, answer the following questions:
 
-1. What are the dimensions of the dataset?
+1. What are the dimensions of the data set?
   What does each row represent?
+  
+  Each row represents a different country and year. The dimensions 
 
 The dataset spans a lot of years.
 We are only interested in data from year 2016.
@@ -76,8 +76,9 @@ In the R code chunk below titled `hfi-2016`, type the code that does the followi
 - Filter the data `hfi` data frame for year 2016, and
 - Assigns the result to a data frame named `hfi_2016`.
 
-```{r hfi-2016}
-
+```{r hfi-2016 }
+hfi <- readr::read_csv("https://www.openintro.org/data/csv/hfi.csv")
+hfi_2016 <- hfi %>% filter(year == 2016)
 ```
 
 ### 1. Identify our research question(s)
@@ -95,32 +96,73 @@ Answer the following questions (use your markdown skills) and complete the follo
 2. What type of plot would you use to display the distribution of the personal freedom scores, `pf_score`? 
   Would this be the same type of plot to display the distribution of the political pressures and controls on media content index, `pf_expression_control`?
 
-
+Answer: I would recommend using a scatterplot, where each data point represents a country and the X and Y axis are pf_expression_control and pf_score, respectively.
 
 - In the R code chunk below titled `univariable-plots`, type the R code that displays this plot for `pf_score`.
 - In the R code chunk below titled `univariable-plots`, type the R code that displays this plot for `pf_expression_control`.
 
-```{r distribution-plots}
+```{r univariable-plots}
+
+# Histogram for pf_score
+ggplot(hfi_2016, aes(x = pf_score)) +
+  geom_histogram(binwidth = 0.25, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Personal Freedom Score in 2016",
+       x = "PF Score",
+       y = "Frequency",
+       caption = "Source: Open Intro Human Freedom Index https://www.openintro.org/data/index.php?data=hfi") +
+  theme_minimal()
+
+# Histogram for pf_expression_control
+ggplot(hfi_2016, aes(x = pf_expression_control)) +
+  geom_histogram(binwidth = 0.25, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Personal Freedom Expression Control in 2016",
+       x = "PF Expression Control",
+       y = "Frequency",
+       caption = "Source: Open Intro Human Freedom Index https://www.openintro.org/data/index.php?data=hfi") +
+  theme_minimal()
 
 ```
 
 4. Comment on each of these two distributions. 
   Be sure to describe their centers, spread, shape, and any potential outliers.
+  
+  PF Score: 
+  Center: Around 7
+  Spread: 
+  Shape:
+  Outliers:
+  
+  PF Expression Control: 
+  Center: Around 5
+  Spread:
+  Shape:
+  Outliers:
 
 
 
 3. What type of plot would you use to display the relationship between the personal freedom score, `pf_score`, and the political pressures and controls on media content index,`pf_expression_control`?
 
 
+  Answer: I would use a scattterplot
 
 - In the R code chunk below titled `relationship-plot`, plot this relationship using the variable `pf_expression_control` as the predictor/explanatory variable.
 
 ```{r relationship-plot}
+# Scatterplot
+ggplot(hfi_2016, aes(x = pf_expression_control, y = pf_score)) +
+  geom_point() +
+  labs(title = "Personal Freedom Score vs. PF Expression Control",
+       x = "PF Expression Control",
+       y = "PF Score",
+       caption = "Source: Open Intro Human Freedom Index https://www.openintro.org/data/index.php?data=hfi") +
+  theme_minimal()
 
 ```
 
 4. Does the relationship look linear?
   If you knew a country's `pf_expression_control`, or its score out of 10, with 0 being the most, of political pressures and controls on media content, would you be comfortable using a linear model to predict the personal freedom score?
+
+Answer: Yes, there appears to be a linear positive relationship between pf_score and pf_expression_control.
 
 #### Challenge
 
@@ -147,7 +189,7 @@ To begin, we will create a `{parsnip}` specification for a linear model.
 
 - In the code chunk below titled `parsnip-spec`, replace "verbatim" with "r" just before the code chunk title.
 
-```{verbatim parsnip-spec}
+```{r parsnip-spec}
 lm_spec <- linear_reg() %>%
   set_mode("regression") %>%
   set_engine("lm")
@@ -169,7 +211,7 @@ Look at your knitted document to see how this syntax appears.
 
 - In the code chunk below titled `fit-lm`, replace "verbatim" with "r" just before the code chunk title. 
 
-```{verbatim fit-lm}
+```{r fit-lm}
 slr_mod <- lm_spec %>% 
   fit(pf_score ~ pf_expression_control, data = hfi_2016)
 
@@ -204,7 +246,7 @@ We use `glance` from  `{broom}` (which is automatically loaded with `{tidymodels
 
 - In the code chunk below titled `glance-lm`, replace "verbatim" with "r" just before the code chunk title. 
 
-```{verbatim glance-mod}
+```{r glance-mod}
 glance(slr_mod)
 ```
 
@@ -212,12 +254,14 @@ After doing this and running the code, answer the following questions:
 
 7. What is the value of $R^2$ for this model?
 
+Answer: 0.7141342	
 
 
 8. What does this value mean in the context of this model?
   Think about what would a "good" value of $R^2$ would be?
   Can/should this value be "perfect"?
 
+Answer: It's not terrible for a model, since it is above 0.5, but closer to 1.0 would be better.
 
 
 #### 4.B: Assess with test/train
@@ -233,15 +277,26 @@ Using the `diamonds` example provided to you in the Day 2 `README`, do the follo
 - Create an initial 80-20 split of the `hfi_2016` dataset
 - Using your initial split R object, assign the two splits into a training R object and a testing R object.
 
+```{r train-test}
+set.seed(1984)
+# put 80% of the data into the training set
+hfi_2016_split <- initial_split(hfi_2016, prop = 0.80)
+
+# assign the two splits to data frames - with descriptive names
+hfi_2016_train <- training(hfi_2016_split)
+hfi_2016_test <- testing(hfi_2016_split)
+```
+
+
 Now, you will use your training dataset to fit a SLR model.
 
 - In the code chunk below titled `train-fit-lm`, replace "verbatim" with "r" just before the code chunk title and update the data set to your training R object you just created.
 
-```{verbatim train-fit-lm}
-slr_train <- lm_spec %>% 
+```{r train-fit-lm}
+hfi_2016_train <- lm_spec %>% 
   fit(pf_score ~ pf_expression_control, data = hfi_2016)
 
-tidy(slr_train)
+tidy(hfi_2016_train)
 ```
 
 Notice that you can reuse the `lm_spec` specification because we are still doing a linear model.
@@ -249,7 +304,7 @@ Notice that you can reuse the `lm_spec` specification because we are still doing
 9. Using the `tidy` output, update the below formula with the estimated parameters.
   That is, replace "intercept" and "slope" with the appropriate values
 
-$\hat{\texttt{pf\score}} = intercept + slope \times \texttt{pf\_expression\_control}$
+$\hat{\texttt{pf\score}} = 4.2838153 + 0.5418452 \times \texttt{pf\_expression\_control}$
 
 
 10. Interpret each of the estimated parameters from (10) in the context of this research question.
@@ -260,8 +315,8 @@ Now we will assess using the testing data set.
 
 - In the code chunk below titled `train-fit-lm`, replace "verbatim" with "r" just before the code chunk title and update `data_test` to whatever R object you assigned your testing data to above.
   
-```{verbatim glance-test}
-test_aug <- augment(slr_train, new_data = data_test)
+```{r train-fit-lm}
+test_aug <- augment(hfi_2016_train, new_data = hfi_2016_test)
 test_aug
 ```
 
@@ -304,7 +359,7 @@ We should also verify this condition with a plot of the residuals vs. fitted (pr
 - In the code chunk below titled `fitted-residual`, replace "verbatim" with "r" just before the code chunk title. 
   
 ```{verbatim fitted-residual}
-ggplot(data = train_aug, aes(x = .fitted, y = .resid)) +
+ggplot(data = train_aug, aes(x = .pred, y = .resid)) +
   geom_point() +
   geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
   xlab("Fitted values") +
@@ -324,7 +379,7 @@ Answer the following question:
 
 - In the code chunk below titled `residual-histogram`, replace "verbatim" with "r" just before the code chunk title. 
  
-```{verbatim fitted-residual}
+```{verbatim fitted-residual-historgram}
 ggplot(data = train_aug, aes(x = .resid)) +
   geom_histogram(binwidth = 0.25) +
   xlab("Residuals")
